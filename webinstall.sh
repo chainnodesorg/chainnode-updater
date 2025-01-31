@@ -6,7 +6,7 @@ DIR=/usr/share/chainnode
 URL=https://raw.githubusercontent.com/chainnodesorg/chainnode-updater/refs/heads/main
 LOG=/var/chainnode_install.log
 
-mkir -p $DIR
+mkdir -p $DIR
 curl -fsSL "$URL/update.sh" -o "$DIR/update.sh"
 chmod +x "$DIR/update.sh"
 
