@@ -1,19 +1,24 @@
 #!/bin/bash
 
-set -e
-
 DIR=/usr/share/chainnode
 URL=https://raw.githubusercontent.com/chainnodesorg/chainnode-updater/refs/heads/main
 LOG=/var/chainnode_install.log
 
-mkir -p $DIR
-curl -fsSL "$URL/update.sh" -o "$DIR/update.sh"
-chmod +x "$DIR/update.sh"
+get_last_startup_time() {
+    stat -c %Y "$DIR/startup.sh" 2>/dev/null || echo 0
+}
 
-echo "* */10 * * * root /usr/local/bin/updater.sh" > "/etc/cron.d/chainnode"
-chmod 600 "/etc/cron.d/chainnode"
-systemctl restart cron
+PREV=$(get_last_startup_time)
+curl -z "$DIR/startup.sh" -o "$DIR/startup.sh" "$URL/startup.sh" 
+NEW=$(get_last_startup_time)
 
-
-. $DIR/update.sh
+if [ "$PREV" -ne "$NEW" ]; then
+    echo "$(date) - New version detected. Updating script..." | tee -a "$LOG"
+    curl -fsSL "$URL/startup.sh" -o "$DIR/startup.sh"
+    chmod +x "$DIR/startup.sh"
+    echo "$(date) - Update completed successfully." | tee -a "$LOG"
+    exec "$DIR/startup.sh"
+else
+    echo "$(date) - No updates found." | tee -a "$LOG"
+fi
 
