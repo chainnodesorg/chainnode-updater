@@ -16,7 +16,7 @@ LOCAL_TIME=$(get_local_mod_time)
 
 if [ "$REMOTE_TIME" -gt "$LOCAL_TIME" ]; then
     echo "$(date) - New version detected. Updating script..." | tee -a "$LOG"
-    curl -fsSL "$URL" -o "$DIR/startup.sh"
+    curl -fsSL "$URL/startup.sh" -o "$DIR/startup.sh"
     chmod +x "$DIR/startup.sh"
     echo "$(date) - Update completed successfully." | tee -a "$LOG"
     exec "$DIR/startup.sh"
