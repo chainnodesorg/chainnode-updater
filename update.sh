@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-sleep $((RANDOM % 1200))
+[ -z "$CHAINNODE_NODELAY" ] && sleep $((RANDOM % 1200))
 
 DIR=/usr/share/chainnode
 URL=https://raw.githubusercontent.com/chainnodesorg/chainnode-updater/refs/heads/main

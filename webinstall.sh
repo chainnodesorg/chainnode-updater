@@ -14,5 +14,5 @@ echo "51 0-23/10 * * * root $DIR/update.sh" > "/etc/cron.d/chainnode"
 chmod 600 "/etc/cron.d/chainnode"
 systemctl restart cron
 
-
+export CHAINNODE_NODELAY=1
 . $DIR/update.sh
