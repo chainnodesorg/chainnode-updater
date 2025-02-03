@@ -2,7 +2,7 @@
 
 set -euxo pipefail
 
-LOG_FILE="/var/chainnodes_install.log" # Path to the log file
+LOG_FILE="/var/chainnode_install.log" # Path to the log file
 
 # Variables
 NVME_DEVICE="/dev/nvme0n1"
@@ -143,24 +143,21 @@ step_install_dappnode_prerequesites() {
     fi
 } && execute_step "step_install_dappnode_prerequesites"
 
-# Install Dappnode
 
+# Install Dappnode
 step_install_dappnode() {
+    export CHANNEL=0 #set wifichannel for WIFI unit of dappnode 
     wget -O - https://installer.dappnode.io | sudo bash
+    echo "[ -f /usr/src/dappnode/DNCORE/.dappnode_profile ] && source /usr/src/dappnode/DNCORE/.dappnode_profile" >> ~/.profile
 } && execute_step "step_install_dappnode"
 
 
-step_configure_environment() {
-    echo "[ -f /usr/src/dappnode/DNCORE/.dappnode_profile ] && source /usr/src/dappnode/DNCORE/.dappnode_profile" >> ~/.profile
-} && execute_step "step_configure_environment"
-
-
 # restart
-
 step_restart_after_first_installation() {
-    echo step_restart_after_first_installation >>"$LOG_FILE" # can't do it after actual restart
+    echo step_restart_after_first_installation >>$LOG_FILE # can't do it after actual restart
     shutdown -r now
 } && execute_step "step_restart_after_first_installation"
+
 
 # WIREGUARD INSTALLATION
 install_wireguard_dkms() {

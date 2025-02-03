@@ -1,20 +1,21 @@
 #!/bin/bash
 
+set -e
+sleep $((RANDOM % 1200))
+
 DIR=/usr/share/chainnode
 URL=https://raw.githubusercontent.com/chainnodesorg/chainnode-updater/refs/heads/main
 LOG=/var/chainnode_install.log
 
-get_remote_mod_time() {
-    curl -sI "$URL/startup.sh" | grep -i "Last-Modified" | cut -d' ' -f2- | tr -d '\r' 
-}
-get_local_mod_time() {
-     stat -c %Y "$DIR/startup.sh" 2>/dev/null || echo 0 
+get_last_startup_time() {
+    stat -c %Y "$DIR/startup.sh" 2>/dev/null || echo 0
 }
 
-REMOTE_TIME=$(date -d "$(get_remote_mod_time)" +%s 2>/dev/null || echo 0)
-LOCAL_TIME=$(get_local_mod_time)
+PREV=$(get_last_startup_time)
+curl -z "$DIR/startup.sh" -o "$DIR/startup.sh" "$URL/startup.sh" 
+NEW=$(get_last_startup_time)
 
-if [ "$REMOTE_TIME" -gt "$LOCAL_TIME" ]; then
+if [ "$PREV" -ne "$NEW" ]; then
     echo "$(date) - New version detected. Updating script..." | tee -a "$LOG"
     curl -fsSL "$URL/startup.sh" -o "$DIR/startup.sh"
     chmod +x "$DIR/startup.sh"
