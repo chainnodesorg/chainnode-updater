@@ -146,7 +146,7 @@ step_install_dappnode_prerequesites() {
 
 # Install Dappnode
 step_install_dappnode() {
-    export CHANNEL=0 #set wifichannel for WIFI unit of dappnode 
+    export CHANNEL=0 #set wifichannel for WIFI unit of dappnode
     wget -O - https://installer.dappnode.io | sudo bash
     echo "[ -f /usr/src/dappnode/DNCORE/.dappnode_profile ] && source /usr/src/dappnode/DNCORE/.dappnode_profile" >> ~/.profile
 } && execute_step "step_install_dappnode"
@@ -157,6 +157,26 @@ step_restart_after_first_installation() {
     echo step_restart_after_first_installation >>$LOG_FILE # can't do it after actual restart
     shutdown -r now
 } && execute_step "step_restart_after_first_installation"
+
+
+## UPDATES ##
+
+
+# Update Dappnode 1
+step_update_dappnode_1() {
+    export CHANNEL=0 #set wifichannel for WIFI unit of dappnode
+    wget -O - https://installer.dappnode.io | sudo bash
+} && execute_step "step_update_dappnode_1"
+
+
+# Update Dappnode 1 - restart
+step_restart_after_update_1() {
+    echo step_restart_after_update_1 >>$LOG_FILE # can't do it after actual restart
+    shutdown -r now
+} && execute_step "step_restart_after_update_1"
+
+
+################ HELPER FUNCTIONS BELOW ################
 
 
 # WIREGUARD INSTALLATION
