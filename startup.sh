@@ -162,20 +162,6 @@ step_restart_after_first_installation() {
 ## UPDATES ##
 
 
-# Update Dappnode 1
-step_update_dappnode_1() {
-    export CHANNEL=0 #set wifichannel for WIFI unit of dappnode
-    wget -O - https://installer.dappnode.io | sudo bash
-} && execute_step "step_update_dappnode_1"
-
-
-# Update Dappnode 1 - restart
-step_restart_after_update_1() {
-    echo step_restart_after_update_1 >>$LOG_FILE # can't do it after actual restart
-    shutdown -r now
-} && execute_step "step_restart_after_update_1"
-
-
 ################ HELPER FUNCTIONS BELOW ################
 
 
