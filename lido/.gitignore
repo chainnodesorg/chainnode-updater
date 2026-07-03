@@ -4,3 +4,7 @@
 *.img.xz
 *.img.xz.sha
 *.img.xz.asc
+
+# python bytecode cache from helper scripts
+__pycache__/
+*.pyc

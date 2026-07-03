@@ -18,6 +18,10 @@ if [ -n "$root_src" ]; then
     [ -z "$root_disk" ] && root_disk=$(basename "$root_src")
 fi
 
+pew() {
+    echo "PEW ZOMF"
+}
+
 is_usb() {
     local dev=$1 name; name=$(basename "$dev")
     # 1. never a kernel device class that cannot be a USB stick / SD-via-USB

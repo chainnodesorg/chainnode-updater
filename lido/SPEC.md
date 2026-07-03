@@ -1,6 +1,7 @@
 # SPEC — `lido`: USB provisioning flasher for the chainnode fleet
 
-Status: **design, awaiting approval**. Date: 2026-06-30.
+Status: **validated release candidate** — golden flow proven end-to-end on a fresh
+Orange Pi 5 Plus (2026-07-02). Date: 2026-06-30, updated 2026-07-02.
 Research ground truth: [`.claude/research/lido-provisioning.md`](../.claude/research/lido-provisioning.md).
 
 ## 1. Goal
@@ -28,18 +29,19 @@ a big NVMe volume reserved for chain data; ready for the operator to configure.
 | Deliverable | One flashable `.img`; operator writes it to USB sticks |
 | Build host | `c`, in **`~/lidoflash`** (`/home/vany/lidoflash`). **Never damage `c`.** |
 | Base OS | Latest stable **Armbian Orange Pi 5 Plus** (trixie, vendor kernel), via `make` |
-| Boot target | NVMe; u-boot written to **SPI flash** (`/dev/mtdblock0`). No SD cards. |
+| Boot target | NVMe; the **OrangePi vendor** u-boot (`factory_spi.img`) written to **SPI flash** via `flashcp` on the char device `/dev/mtd0` (never `dd` to cached `mtdblock0`, never the **Armbian** u-boot — it bricks these boards). Card only for the one-time install. |
 | NVMe layout | Single span **ext4** root over the full 4 TB |
 | Docker | Exact versions from `c` (docker-ce 5:29.5.3, containerd.io 2.2.4, buildx 0.34.1, compose-plugin 5.1.4, trixie) from Docker's apt repo |
 | Extra pkgs | net-tools (+ net utils), make/gmake, jq, mc |
 | Node stack | eth-docker (**latest**, unpinned) **installed only** — `./ethd install` done; **no** client choice, `.env`, or `ethd up`. Operator configures later. |
 | Node config | **None baked.** Box is CSM-capable; operator runs `ethd config` to pick clients/CSM/MEV/keys. (Reference values in research doc.) |
 | Blockchain volume | **One big dedicated volume on NVMe** for chain data; eth-docker data dir points here |
-| User | `user` / `password`; groups = same as `vany` on `c` (sudo, docker, operator, …) |
+| User | `user` / `password`; groups = same as `vany` on `c` (sudo, docker, operator, …). Group membership is **re-applied at the end of stage 2**, after Docker created the `docker` group, so `user` reliably lands in `docker`. A `sudoers.d/lido-power` drop-in grants `user` **passwordless** `poweroff`/`reboot`/`shutdown`/`halt`/`ping` for headless ops (`iputils-ping` installed). |
 | SSH | sshd enabled, password auth on; verify `ssh localhost` works. No seeded keys. |
 | WiFi | radio initialized, **no** saved connection |
 | Wired | both NICs → DHCP (NetworkManager, Armbian default) |
 | Time | `systemd-timesyncd`, **UTC** |
+| Console banner | **Must-have (headless):** show **all** IPv4 addresses on `tty1` *before* login, via `/usr/local/sbin/show-sysinfo` + a `getty@tty1` `ExecStartPre` drop-in (mirrors `c`; stock `agetty --noclear` keeps it on screen) |
 | Logs | rotation on 3 layers (journald cap, docker json-file max-size/file, logrotate) |
 | Artifacts | big files (Armbian image, eth-docker checkout) fetched by `make`, **never committed** |
 
