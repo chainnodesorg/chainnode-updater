@@ -1,0 +1,17 @@
+[Unit]
+Description=lido first-boot provisioning (stage1 install / stage2 configure)
+After=network-online.target multi-user.target
+Wants=network-online.target
+# Once the node is fully configured this guard keeps the unit dormant.
+ConditionPathExists=!/opt/lido/stage2.done
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash /opt/lido/firstboot.sh
+StandardOutput=journal+console
+StandardError=journal+console
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

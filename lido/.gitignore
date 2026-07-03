@@ -1,0 +1,10 @@
+# Build artifacts fetched/produced by make — large, never committed (see SPEC §2).
+/build/
+*.img
+*.img.xz
+*.img.xz.sha
+*.img.xz.asc
+
+# python bytecode cache from helper scripts
+__pycache__/
+*.pyc
